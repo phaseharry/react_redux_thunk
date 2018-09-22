@@ -1,38 +1,40 @@
-import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import React, {Fragment} from 'react'
 import { connect } from 'react-redux'
-import NavBar from './NavBar'
+import { HashRouter,Route, Switch } from 'react-router-dom'
+import { loadingThunk } from '../store'
 import ProductList from './ProductList'
-import Product from './Product'
-import {loadingThunk} from '../store'
+import NavBar from './NavBar'
+import Product from './Product';
 
 class Main extends React.Component{
+    constructor(){
+        super()
+        this.findById = this.findById.bind(this)
+    }
     componentDidMount(){
-        this.props.loadProducts();
+        this.props.loadProducts()
+    }
+    findById(id){
+        const product = this.props.products.find((product) => product.id === +id)
+        return product? product : {}
     }
     render(){
-        const {products} = this.props;
-        const singleProduct = (id) => {
-            console.log(id)
-            const product = products.find((product) => {
-                console.log(product)
-                return product.id === id
-            })
-            console.log(products)
-            console.log(product)
-            return product? product : {}
-        }
-        return (
-            <div>
-                <NavBar />
-                <Switch>
-                    <Route path='/products/:id' render={(props) => <Product info={singleProduct(props.match.params.id)}/>} />
-                    <Route path='/products' Component={ProductList} />
-                </Switch>
-            </div>
-
-        )
+       return ( 
+        <div>
+            <HashRouter>
+                <div>
+                    <NavBar />  
+                    <Switch>
+                        <Route exact path='/products' render={(props) => <ProductList {...props}/>}/>
+                        <Route path='/products/:id' render={(props) => <Product {...props} info={this.findById(props.match.params.id)}/>} />
+                    </Switch> 
+                </div>
+            </HashRouter>
+        </div>
+       )
     }
+
+
 }
 
 const mapStateToProps = state => {
@@ -47,5 +49,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-const ConnectedMain = connect(mapStateToProps, mapDispatchToProps)(Main)
-export default ConnectedMain
+export default connect(mapStateToProps, mapDispatchToProps)(Main)

@@ -1,8 +1,8 @@
-import React from 'react';
-import faker from 'faker'
+import React from 'react'
 import {connect} from 'react-redux'
-import ConnectedProduct from './Product'
-import store, {createThunk} from '../store'
+import faker from 'faker'
+import { createThunk, deleteThunk } from '../store'
+import Product from './Product'
 
 class ProductList extends React.Component{
     constructor(){
@@ -11,32 +11,31 @@ class ProductList extends React.Component{
     }
     createProduct(){
         const newProduct = { name: faker.commerce.productName(), rating: faker.random.number(10)}
-        this.props.createProduct(newProduct)
+        this.props.create(newProduct)
     }
     render(){
-       return (
-           <div>
-               <button onClick={this.createProduct}>Create Product</button>
+        const {products} = this.props
+        return(
+            <div>
+                <button onClick={this.createProduct}>Create Product</button>
                 <ul>
-                    {this.props.products.map((product) => <ConnectedProduct info={product} key={product.id}/>)}
-                </ul>        
-           </div>
-       )
+                    {products.map((product) => <Product key={product.id} info={product}/>)}
+                </ul>
+            </div>
+        )
     }
-
 }
 
 const mapStateToProps = state => {
     return {
         products: state.products
-    }   
+    }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        createProduct: (product) => dispatch(createThunk(product))
+        create: (item) => dispatch(createThunk(item))
     }
-
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductList)

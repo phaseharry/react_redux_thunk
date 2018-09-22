@@ -1,23 +1,25 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from 'react'
+import { connect } from 'react-redux'
 import {deleteThunk} from '../store'
 
-const Product = props => {
-    const {name, rating, id} = props.info
+class Product extends React.Component{
+    render(){
+        const {rating, name, id} = this.props.info
+        const history = this.props.history
+        console.log(history)
+        return (
+            <div>
+                <li>{name} {rating}<button onClick={() => this.props.delete(id, history)}>X</button></li>
+            </div>
+        )
+    }
 
-    return (
-        <li>{name} {rating}
-            <button onClick={() => props.deleteProduct(id)}>X</button>
-        </li>
-    )
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        deleteProduct: (id) => dispatch(deleteThunk(id))
+        delete: (id, history) => dispatch(deleteThunk(id, history))
     }
 }
 
-const ConnectedProduct = connect(null, mapDispatchToProps)(Product)
-
-export default ConnectedProduct
+export default connect(null, mapDispatchToProps)(Product)
